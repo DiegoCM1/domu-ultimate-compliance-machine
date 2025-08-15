@@ -1,0 +1,30 @@
+import { CallData } from './types'
+
+export const mockCall: CallData = {
+  callId: 'CALL123',
+  customerName: 'Carlos López',
+  startedAt: '09:30',
+  timezone: 'CST',
+  transcript: [
+    { turnNumber: 1, timestamp: '00:01', speaker: 'Agent AI', text: 'Hola, gracias por llamar a Domu.', confidence: 0.95, critical: false, keywordMatchScore: 0.9, expectedIntent: 'greeting', ruleTriggered: [] },
+    { turnNumber: 2, timestamp: '00:04', speaker: 'Customer', text: 'Hola', confidence: 0.91, critical: false, keywordMatchScore: 0.9, expectedIntent: 'greeting', ruleTriggered: [] },
+    { turnNumber: 3, timestamp: '00:08', speaker: 'Agent AI', text: 'Esta llamada puede ser grabada.', confidence: 0.88, critical: true, keywordMatchScore: 0.3, expectedIntent: 'mini_miranda', ruleTriggered: [] },
+    { turnNumber: 4, timestamp: '00:12', speaker: 'Customer', text: 'Ok', confidence: 0.9, critical: false, keywordMatchScore: 0.8, expectedIntent: 'mini_miranda', ruleTriggered: [] },
+    { turnNumber: 5, timestamp: '00:15', speaker: 'Agent AI', text: '¿Con quién tengo el gusto?', confidence: 0.86, critical: false, keywordMatchScore: 0.7, expectedIntent: 'verify_identity', ruleTriggered: [] },
+    { turnNumber: 6, timestamp: '00:20', speaker: 'Customer', text: 'Soy Carlos.', confidence: 0.92, critical: false, keywordMatchScore: 0.8, expectedIntent: 'verify_identity', ruleTriggered: [] },
+    { turnNumber: 7, timestamp: '00:24', speaker: 'Agent AI', text: 'Necesito tu consentimiento para continuar. ¿Aceptas?', confidence: 0.93, critical: true, keywordMatchScore: 0.9, expectedIntent: 'consent', ruleTriggered: [] },
+    { turnNumber: 8, timestamp: '00:29', speaker: 'Customer', text: 'Eh, supongo.', confidence: 0.8, critical: true, keywordMatchScore: 0.2, expectedIntent: 'consent', ruleTriggered: [] },
+    { turnNumber: 9, timestamp: '00:33', speaker: 'Agent AI', text: 'Debes 2000 pesos.', confidence: 0.92, critical: true, keywordMatchScore: 0.4, expectedIntent: 'amount', ruleTriggered: [] },
+    { turnNumber: 10, timestamp: '00:37', speaker: 'Customer', text: 'Pensé que era 1500.', confidence: 0.87, critical: false, keywordMatchScore: 0.7, expectedIntent: 'amount', ruleTriggered: [] },
+    { turnNumber: 11, timestamp: '00:41', speaker: 'Agent AI', text: 'El saldo correcto es 2000.', confidence: 0.9, critical: false, keywordMatchScore: 0.9, expectedIntent: 'amount', ruleTriggered: [] },
+    { turnNumber: 12, timestamp: '00:46', speaker: 'Customer', text: 'Puedo pagar el viernes.', confidence: 0.85, critical: false, keywordMatchScore: 0.8, expectedIntent: 'promise_to_pay', ruleTriggered: [] },
+    { turnNumber: 13, timestamp: '00:50', speaker: 'Agent AI', text: 'Necesitas pagar ya mismo.', confidence: 0.9, critical: false, keywordMatchScore: 0.6, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 14, timestamp: '00:54', speaker: 'Customer', text: 'Oye, tranquilo.', confidence: 0.82, critical: false, keywordMatchScore: 0.7, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 15, timestamp: '00:58', speaker: 'Agent AI', text: 'Disculpa, gracias por tu tiempo.', confidence: 0.94, critical: false, keywordMatchScore: 0.9, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 16, timestamp: '01:02', speaker: 'Customer', text: 'Gracias, adiós.', confidence: 0.9, critical: false, keywordMatchScore: 0.9, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 17, timestamp: '01:05', speaker: 'Agent AI', text: '¿Hay algo más en lo que pueda ayudar?', confidence: 0.88, critical: false, keywordMatchScore: 0.8, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 18, timestamp: '01:08', speaker: 'Customer', text: 'No, eso es todo.', confidence: 0.9, critical: false, keywordMatchScore: 0.9, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 19, timestamp: '01:12', speaker: 'Agent AI', text: 'Hasta luego.', confidence: 0.93, critical: false, keywordMatchScore: 0.9, expectedIntent: 'wrapup', ruleTriggered: [] },
+    { turnNumber: 20, timestamp: '01:15', speaker: 'Customer', text: 'Hasta luego.', confidence: 0.95, critical: false, keywordMatchScore: 0.9, expectedIntent: 'wrapup', ruleTriggered: [] },
+  ],
+}
