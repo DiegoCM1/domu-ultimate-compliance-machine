@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { turns, callMeta, Turn } from '../../demo-data';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -33,15 +33,19 @@ function overallRisk(avg: number, events: EventLog[]): 'ok' | 'warn' | 'critical
 }
 
 function riskColor(label: string) {
-  return label === 'ok' ? 'text-green-500' : label === 'warn' ? 'text-yellow-500' : 'text-red-500';
+  return label === 'ok'
+    ? 'var(--risk-ok)'
+    : label === 'warn'
+    ? 'var(--risk-warn)'
+    : 'var(--risk-critical)';
 }
 
-function riskBg(label: string) {
+function riskStyles(label: string) {
   return label === 'ok'
-    ? 'bg-green-100 text-green-700'
+    ? { backgroundColor: 'var(--risk-ok-bg)', color: 'var(--risk-ok)' }
     : label === 'warn'
-    ? 'bg-yellow-100 text-yellow-700'
-    : 'bg-red-100 text-red-700';
+    ? { backgroundColor: 'var(--risk-warn-bg)', color: 'var(--risk-warn)' }
+    : { backgroundColor: 'var(--risk-critical-bg)', color: 'var(--risk-critical)' };
 }
 
 function DemoInner() {
@@ -52,6 +56,7 @@ function DemoInner() {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(true);
   const toast = useToast();
+  const transcriptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!running) return;
@@ -73,7 +78,7 @@ function DemoInner() {
               time: t.timestamp,
               rule: 'missing_disclosure',
               severity: 'major',
-              suggestedAction: 'Escalar',
+              suggestedAction: 'Escalate',
             },
           ]);
         }
@@ -84,7 +89,7 @@ function DemoInner() {
               time: t.timestamp,
               rule: 'missing_consent',
               severity: 'major',
-              suggestedAction: 'Escalar',
+              suggestedAction: 'Escalate',
             },
           ]);
         }
@@ -105,12 +110,18 @@ function DemoInner() {
     return () => clearInterval(id);
   }, [running]);
 
+  useEffect(() => {
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+    }
+  }, [displayed]);
+
   const avg = scores.length
     ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
     : 0;
   const oRisk = overallRisk(avg, events);
 
-  const riskGaugeColor = oRisk === 'ok' ? 'bg-green-500' : oRisk === 'warn' ? 'bg-yellow-500' : 'bg-red-500';
+  const riskGaugeColor = riskColor(oRisk);
 
   const toggleRun = () => setRunning((r) => !r);
 
@@ -131,7 +142,10 @@ function DemoInner() {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-center">
-            <div className={`h-6 w-6 rounded-full ${riskGaugeColor}`}></div>
+            <div
+              className="h-6 w-6 rounded-full"
+              style={{ backgroundColor: riskGaugeColor }}
+            ></div>
             <span className="text-xs">{oRisk.toUpperCase()}</span>
           </div>
           <div className="text-sm">
@@ -142,61 +156,59 @@ function DemoInner() {
       </header>
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2 flex flex-col">
-          <ScrollArea className="flex-1 rounded border bg-white p-2">
-            {displayed.map((t) => (
-              <div key={t.turnNumber} className="mb-2 flex items-start gap-2">
-                <span className="w-12 text-xs text-gray-500">{t.timestamp}</span>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">
-                    {t.speaker}
+          <ScrollArea ref={transcriptRef} className="flex-1 rounded border bg-white p-2">
+            {displayed.map((t) => {
+              const isAgent = t.speaker === 'Agent AI';
+              return (
+                <div key={t.turnNumber} className="mb-2 flex items-start gap-2">
+                  <span className="w-12 text-xs text-gray-500">{t.timestamp}</span>
+                  <div className="flex-1">
+                    <div className={`text-sm font-medium ${isAgent ? 'text-blue-600' : 'text-gray-800'}`}>
+                      {t.speaker}
+                    </div>
+                    <div className={`text-sm rounded p-1 ${isAgent ? 'bg-blue-50' : 'bg-gray-100'}`}>{t.text}</div>
                   </div>
-                  <div className="text-sm">{t.text}</div>
+                  <Badge style={riskStyles((t as any).label)}>
+                    {(t as any).compositeScore}
+                  </Badge>
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: riskColor((t as any).label) }}
+                  ></span>
+                  {(t as any).label === 'critical' && t.critical && (
+                    <Button
+                      className="ml-2 px-2 py-1 text-xs"
+                      style={{ backgroundColor: 'var(--risk-critical)', color: '#fff' }}
+                      onClick={() => handleAction('Handoff requested')}
+                    >
+                      Escalate
+                    </Button>
+                  )}
+                  {(t as any).label === 'warn' && t.critical && (
+                    <Button
+                      className="ml-2 px-2 py-1 text-xs"
+                      style={{ backgroundColor: 'var(--risk-warn)', color: '#000' }}
+                      onClick={() => handleAction('Agent will rephrase next turn')}
+                    >
+                      Rephrase
+                    </Button>
+                  )}
                 </div>
-                <Badge className={riskBg((t as any).label)}>
-                  {(t as any).compositeScore}
-                </Badge>
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    (t as any).label === 'ok'
-                      ? 'bg-green-500'
-                      : (t as any).label === 'warn'
-                      ? 'bg-yellow-500'
-                      : 'bg-red-500'
-                  }`}
-                ></span>
-                {(t as any).label === 'critical' && t.critical && (
-                  <Button
-                    className="ml-2 bg-red-500 px-2 py-1 text-xs"
-                    onClick={() => handleAction('Handoff requested')}
-                  >
-                    Escalar
-                  </Button>
-                )}
-                {(t as any).label === 'warn' && t.critical && (
-                  <Button
-                    className="ml-2 bg-yellow-500 px-2 py-1 text-xs"
-                    onClick={() => handleAction('Agent will rephrase next turn')}
-                  >
-                    Reformular
-                  </Button>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </ScrollArea>
         </div>
         <div className="flex flex-col">
           <h2 className="mb-2 text-sm font-semibold">Event Log</h2>
           <ScrollArea className="flex-1 rounded border bg-white p-2">
             {events.length === 0 && (
-              <p className="text-sm text-gray-500">Sin alertas</p>
+              <p className="text-sm text-gray-500">No alerts</p>
             )}
             {events.map((e, idx) => (
               <div key={idx} className="mb-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{e.time}</span>
-                  <Badge
-                    className={riskBg(e.severity === 'major' ? 'critical' : 'warn')}
-                  >
+                  <Badge style={riskStyles(e.severity === 'major' ? 'critical' : 'warn')}>
                     {e.rule}
                   </Badge>
                 </div>
