@@ -3,11 +3,14 @@ import { cn } from '../../lib/utils';
 
 export interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function ScrollArea({ className, ...props }: ScrollAreaProps) {
-  return (
+export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
+  ({ className, ...props }, ref) => (
     <div
+      ref={ref}
       className={cn('overflow-y-auto', className)}
       {...props}
     />
-  );
-}
+  )
+);
+
+ScrollArea.displayName = 'ScrollArea';

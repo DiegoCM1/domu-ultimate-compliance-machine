@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --risk-ok: #22c55e;
+  --risk-warn: #eab308;
+  --risk-critical: #ef4444;
+  --risk-ok-bg: #dcfce7;
+  --risk-warn-bg: #fef9c3;
+  --risk-critical-bg: #fee2e2;
+}
+
 body {
   font-family: 'Inter', 'Roboto', sans-serif;
 }
